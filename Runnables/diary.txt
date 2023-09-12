@@ -1,0 +1,7 @@
+Observation : 
+
+To load the dimacs graph, the compiled executable "Network" takes the command : 
+```loadDimacsGraph ../Networks/Florida/OSM/dimacs/USA-road-d.FLA.gr ../Networks/Florida/OSM/binary/USA-road-d.FLA.bin```
+
+To do dijkstra algorithm to find shortest path on any two nodes of the graph, the compiled executable ULTRA takes the command 
+```dijkstra ../Networks/Florida/OSM/binary/USA-road-d.FLA.bin 0 1```

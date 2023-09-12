@@ -1,143 +1,32 @@
-/*
-Centre for infrastructure, Sustainable
- Transportation and Urban Planning
- Indian Institute of Science (IISc), Bengaluru
- C++ Developer: Round 1
- The aim of this exam is to test your problem-solving skills and basic understanding of C++. All questions
- are NOT compulsory, and partial solutions will also be considered while shortlisting for subsequent rounds.
- Hence, you are encouraged to submit the best possible answer for each question. Follow the instructions
- below precisely.
- • Plagiarism will result in instant disqualification. You must write your own code.
- • The test requires you to fork a GitHub repository and work on it. To submit your solution, follow the
- steps:– Pushthe updated/new files to your repository and add Prateek1009 (link) and mxthxngx (link) as
- collaborators. Remember that you must create a private fork of the repository. Public repositories
- will not be considered for evaluation.– Fill the following Google Form: link. You are allowed to make only one submission.
- • The test commences on 10th September 2023 (08:00 AM). The last date for submission is 12th Septem
-ber 2023 (08:00 PM). Late submissions will not be accepted.
- • If selected, it will be mandatory for you to join in an in-person capacity. Please refrain from attempting
- the test if you are unable to attend in person.
- All the best.
- CiSTUP
- Indian Institute of Science, Bengaluru
- 
-Question 1 (40 Marks)
- You will be working with the GitHub repository “ULTRA: UnLimited TRAnsfers for Multimodal Route
- Planning”(link), which contains various state-of-the-art shortest-path algorithms. Additionally, you have
- been provided with a graph of Florida in the DIMACS format (link). Below is a summary of the DIMACS
- format. For more details on it, refer to link.
- c file : TestCase1−Sample test case for C++ Developer position
- c source : Prateek Agarwal (prateeka@iisc .ac. in)
- p sp 4 6
- a 1 2 5
- a 1 4 1
- • Comments. Lines starting with “c” are comments, providing human-readable information and are
- ignored by programs.
- • Problem line. The line starting with “p” specifies the problem type (“sp” for shortest path), the
- number of nodes “n”, and the number of edges “m” in the graph.
- • Edge Descriptors. Each edge is described using “a u v w”, indicating an edge from node “u” to node
- “v” with weight “w”.
- Your task is to create a file named question1.cpp inside the Runnables folder. When compiled, question1.cpp
- runs Dijkstra’s algorithm implemented in the repository for 200 randomly selected source-destination pairs
- on the Florida graph. Note that question1.cpp calls Dijkstra’s algorithm already implemented in the repos
-itory. Do not code your own Dijkstra’s algorithm. question1.cpp prints the total runtime in seconds in the
- following format:
- Total runtime in seconds for 200 random Dijkstra: x
- Hints:
- • Here are a few test cases for you to verify the Dijkstra’s output:– Source: 264345, Target: 264327
- Shortest Path: 264345- 269065- 264331- 264311- 264324- 264327
- Shortest path length: 10283– Source: 1234, Target: 1272
- Shortest Path: 1234- 1235- 1228- 1226- 1238- 1247- 1265- 1272
- Shortest path length: 11158– Source: 0, Target: 1
- Shortest Path: 0- 1
- Shortest path length: 14188
- • Anode labeled x in the DIMACS graph, will be labeled x-1 in the custom binary format. For example,
- node labeled 1 in the DIMACS graph will be represented as node 0 in the custom binary format. The
- sample cases provided above are w.r.t. custom binary format.
- • You can spend weeks understanding all the algorithms. However, the question expects you to focus on
- identifying how and where Dijkstra’s algorithm is being used in the codebase and replicate the process.
- The question can be completed in less than 25 lines of code!
- 
-*/
-
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include <unordered_map>
-#include "..\Algorithms\Dijkstra\Dijkstra.h"
-
-struct Edge {
-    int u, v, w;
-};
-
-struct Coordinate {
-    int x, y;
-};
+#include <random>
+#include <chrono>
+#include "./../Algorithms/Dijkstra/Dijkstra.h"
 
 int main() {
-    std::ifstream grFile("Runnables/USA-road-d.FLA.gr");
-    std::ifstream coFile("Runnables/USA-road-d.FLA.co");
+    const int numPairs = 200;
+    const int numVertices = 1070376;  // Number of vertices in the Florida graph
+    std::vector<std::pair<int, int>> pairs(numPairs);
 
-    std::string line;
-    int n, m;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+    std::uniform_int_distribution<int> distribution(0, numVertices - 1);
 
-    std::vector<Edge> edges;
-    std::unordered_map<int, Coordinate> coordinates;
-
-    // Read .gr file
-    while (std::getline(grFile, line)) {
-        if (line[0] == 'p') {
-            sscanf(line.c_str(), "p sp %d %d", &n, &m);
-        } else if (line[0] == 'a') {
-            Edge edge;
-            sscanf(line.c_str(), "a %d %d %d", &edge.u, &edge.v, &edge.w);
-            edges.push_back(edge);
-        }
+    for (int i = 0; i < numPairs; ++i) {
+        pairs[i] = std::make_pair(distribution(generator), distribution(generator));
     }
 
-    // Read .co file
-    while (std::getline(coFile, line)) {
-        if (line[0] == 'p') {
-            sscanf(line.c_str(), "p aux sp co %d", &n);
-        } else if (line[0] == 'v') {
-            int id;
-            Coordinate coord;
-            sscanf(line.c_str(), "v %d %d %d", &id, &coord.x, &coord.y);
-            coordinates[id] = coord;
-        }
+    Dijkstra<Graph> dijkstra(graph);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    for (const auto& pair : pairs) {
+        dijkstra.run(pair.first, pair.second);
     }
 
-    // Your code to call Dijkstra's algorithm and other logic here
-
-     // Step 2 and Step 3
-    std::vector<std::vector<Edge>> graph(n + 1);
-    std::vector<int> weight(m);
-    for (const auto& edge : edges) {
-        graph[edge.u].push_back(edge);
-        weight.push_back(edge.w);
-    }
-
-    // Step 4
-    Dijkstra<YourGraphType> dijkstra(graph, weight);
-
-    std::chrono::duration<double> total_runtime(0);
-
-    // Step 5
-    for (int i = 0; i < 200; ++i) {
-        int source = /* random source node */;
-        int destination = /* random destination node */;
-
-        auto start_time = std::chrono::high_resolution_clock::now();
-
-        dijkstra.run(source, destination);
-
-        auto end_time = std::chrono::high_resolution_clock::now();
-        auto runtime = end_time - start_time;
-        total_runtime += runtime;
-    }
-
-    std::cout << "Total runtime in seconds for 200 random Dijkstra: " << total_runtime.count() << std::endl;
-
-
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = end - start;
+    std::cout << "Total runtime: " << diff.count() << " seconds" << std::endl;
 
     return 0;
 }

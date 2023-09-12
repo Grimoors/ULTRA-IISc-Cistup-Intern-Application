@@ -5,7 +5,7 @@ DEBUG=-rdynamic -Werror -Wpedantic -pedantic-errors -Wall -Wextra -Wparentheses 
 RELEASE=-ffast-math -ftree-vectorize -Wfatal-errors -DNDEBUG
 
 
-all: NetworkRelease ULTRARelease ULTRAPHASTRelease
+all: NetworkRelease ULTRARelease
 
 NetworkDebug:
 	$(CC) $(FLAGS) $(OPTIMIZATION) $(DEBUG) -o Network Network.cpp

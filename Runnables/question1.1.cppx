@@ -1,0 +1,19 @@
+#include "./../Runnables/Commands/NetworkIO.h"
+#include "./../DataStructures/Graph/Graph.h"
+#include "./../Algorithms/Dijkstra/Dijkstra.h"
+
+// Load the DIMACS graph and convert it to the transfer graph format
+LoadDimacsGraph command(shell);
+command.setParameter("Input file", "path/to/dimacs/file");
+command.setParameter("Output file", "path/to/output/file");
+command.setParameter("Graph type", "dynamic");
+command.setParameter("Coordinate factor", "0.000001");
+command.execute();
+
+// Load the transfer graph data from the output file
+TransferGraph transferGraph;
+transferGraph.readBinary("path/to/output/file");
+
+// Create a Dijkstra object and run the algorithm on the transfer graph
+Dijkstra dijkstra(transferGraph);
+dijkstra.run(sourceNodeId, targetNodeId);
