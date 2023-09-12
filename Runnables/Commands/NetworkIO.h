@@ -214,7 +214,11 @@ public:
         addParameter("Graph type", "dynamic", { "static", "dynamic" });
         addParameter("Coordinate factor", "0.000001");
     }
-
+     // Add a new public method to expose the addParameter functionality
+    void publicAddParameter(const std::string& name, const std::string& defaultValue, const std::vector<std::string>& options = std::vector<std::string>()) {
+        addParameter(name, defaultValue, options);
+    }
+    
     virtual void execute() noexcept {
         std::string graphType = getParameter("Graph type");
         if (graphType == "static") {
